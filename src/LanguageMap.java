@@ -1,3 +1,7 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Scanner;
@@ -14,9 +18,14 @@ public class LanguageMap {
 	// this needs a Map that maps keys ex:  "aehr" to the 
 	// Set of String { "hare", "hear", "rhea"} that have those chars
 
-	public LanguageMap(String lang, Scanner wordSource) {
+	public LanguageMap(String lang, String path) throws FileNotFoundException, URISyntaxException {
+		
 		this.myLanguage=lang;
 		wordMap = new HashMap<String, TreeSet<String>>();
+		URL url = this.getClass().getResource(path);
+		Scanner wordSource = new Scanner(new File(url.toURI()));
+				
+		
 		while(wordSource.hasNextLine()) {
 			String word = wordSource.nextLine().trim().toLowerCase();
 			char[] c = word.toCharArray();
@@ -42,7 +51,10 @@ public class LanguageMap {
 		char[] c = word.toCharArray();
 		Arrays.sort(c);
 		String sortedWord = new String(c);
+		
+		TreeSet<?> set = wordMap.get(sortedWord);
 		if (!wordMap.containsKey(sortedWord)) return null;
-		return (String[]) wordMap.get(sortedWord).toArray();
+		String[] strings = Arrays.stream(set.toArray()).toArray(String[]::new);
+		return strings;
 	}
 }
